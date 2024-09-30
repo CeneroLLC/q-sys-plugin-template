@@ -306,7 +306,12 @@ if Controls then
 		print("Initializing...")
 
 		-- todo: Do initialization stuff here...
-		tprint(PluginInfo)
+
+		--let's print the Controls and Properties tables as an example
+		print("Contents of the Controls table:")
+		print(tprint(Controls))
+		print("Contents of the Properties table:")
+		print(tprint(Properties))
 	end
 
 	------------------------------------------------------------------------------------------
