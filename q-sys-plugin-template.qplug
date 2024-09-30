@@ -1,0 +1,325 @@
+--[[----------------------------------------------------------------------------------------------------------------------------
+	Q-SYS Designer Reserved Tables
+-------------------------------------------------------------------------------------------------------------------------------]]
+-- This table contains information instructing Q-Sys Designer on how to handle the plugin.
+PluginInfo = {
+	-- Name of the plugin in Q-SYS designer
+	-- The '~' symbol allows you to create a folder structure.
+	-- i.e. "Cenero~Hardware~Cisco RoomOS System" or "Cenero~Utilities~Math"
+	Name = "Cenero~Plugin Template",
+	-- Plugin version string
+	Version = "0.0.0",
+	-- Id must be unique across all plugins and versions of plugins.
+	-- Recommendation is to paste in a generated unique ID, but you can use any unique string.
+	-- Don't change this after a plugin's release and use in the wild!
+	Id = "<paste a GUID here>",
+	-- Description will show when the plugin is installed
+	Description = "A template for the development of Q-SYS plugins.  Includes some boilerplate code with helpful examples and comments.",
+	-- ShowDebug will place a property in the properties pane that allows the user to show/hide debug output below the plugin's UI.
+	ShowDebug = true,
+	-- Author string
+	Author = "Joe Free"
+}
+
+--[[----------------------------------------------------------------------------------------------------------------------------
+	User Tables
+-------------------------------------------------------------------------------------------------------------------------------]]
+-- Let's define a table to hold onto some commonly used colors.  Then we can access it later with Color.Primary, for example.
+local Colors = {
+	Primary = {0, 124, 194},
+	White = {255, 255, 255},
+	Black = {0, 0, 0},
+	Red = {255, 0, 0},
+	Green = {0, 255, 0},
+	Blue = {0, 0, 255},
+	Medium_Gray = {120, 120, 120},
+	Light_Gray = {231, 232, 233},
+	Dark_Gray = {35, 31, 32}
+}
+
+--[[----------------------------------------------------------------------------------------------------------------------------
+	Q-SYS Designer Reserved Functions
+-------------------------------------------------------------------------------------------------------------------------------]]
+-- An optional function to define the friendly name that should show up on the plugin's block when drug into Designer
+function GetPrettyName()
+	-- return "My Plugin Name"
+	-- Or we could access data from the PluginInfo table here to append the version, too
+	return string.format("My Plugin Name %s", PluginInfo.Version)
+end
+
+-- An optional function to define the color of the plugin block in designer
+function GetColor(props)
+	return Colors.Primary
+end
+
+-- An optional function to expose some properties to the user in the properties pane.
+-- Whatever properties we define here will be editable in the properties pane when the system is not running.
+-- If nothing is defined here, only the position and fill properties will show in the properties pane.
+function GetProperties()
+	props = {
+		-- Add properties here
+		{
+			-- Boolean property example
+			Name = "UseStaticIp",
+			Type = "boolean",
+			Value = true -- Default value
+		},
+		{
+			-- String property example
+			Name = "IpAddress",
+			Type = "string",
+			Value = "192.168.1.10" -- Default value
+		},
+		{
+			-- Integer property example
+			Name = "IpPort",
+			Type = "integer",
+			Min = 1,
+			Max = 65535,
+			Value = 23 -- Default value
+		},
+		{
+			-- Enum property example
+			Name = "MicType",
+			Type = "enum",
+			Choices = {
+				-- List of options
+				"Shure",
+				"Sennheiser",
+				"Audio-Technica"
+			},
+			Value = "Shure" -- Default value
+		}
+	}
+	-- return the properties table to Q-SYS designer
+	return props
+end
+
+-- An optional function to change the properties table based on other properties.
+-- This function is called by Q-SYS designer on any change of properties values to give us a chance to modify it.
+function RectifyProperties(props)
+	-- Amend properties table here, based on other properties
+
+	-- For example, show or hide the IP-related fields based on the state of a boolean
+	if props["UseStaticIp"].Value == false then
+		props["IpPort"].IsHidden = true
+		props["IpAddress"].IsHidden = true
+	else
+		props["IpPort"].IsHidden = false
+		props["IpAddress"].IsHidden = false
+	end
+
+	-- return the edited properties table to Q-SYS designer
+	return props
+end
+
+--[[
+	
+	GetControls() is REQUIRED by Q-SYS designer.  If you don't have this, your plugin will not install.
+	If you've written some of the runtime code already, simply use the control names you populated
+	in Text Controller/Control Script, and use their Properties to inform the values here
+
+	ControlType can be Button, Knob, Indicator or Text
+	ButtonType (ControlType == Button) can be Momentary, Toggle or Trigger
+	IndicatorType (ControlType == Indicator) can be Led, Meter, Text or Status
+	ControlUnit (ControlType == Knob) can be Hz, Float, Integer, Pan, Percent, Position or Seconds
+
+]]
+function GetControls(props)
+	ctls = {
+		-- ControlType == Indicator
+		{
+			Name = "IndicatorLed",
+			ControlType = "Indicator",
+			IndicatorType = "Led",
+			PinStyle = "Output",
+			UserPin = true
+		},
+		{
+			Name = "IndicatorMeter",
+			ControlType = "Indicator",
+			IndicatorType = "Meter",
+			PinStyle = "Output",
+			UserPin = true
+		},
+		{
+			Name = "IndicatorText",
+			ControlType = "Indicator",
+			IndicatorType = "Text",
+			PinStyle = "Output",
+			UserPin = true
+		},
+		{
+			Name = "IndicatorStatus",
+			ControlType = "Indicator",
+			IndicatorType = "Status",
+			PinStyle = "Output",
+			UserPin = true
+		},
+		-- ControlType == Button
+		{
+			Name = "ButtonMomentary",
+			ControlType = "Button",
+			ButtonType = "Toggle",
+			PinStyle = "Input",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "ButtonToggle",
+			ControlType = "Button",
+			ButtonType = "Toggle",
+			PinStyle = "Input",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "ButtonTrigger",
+			ControlType = "Button",
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			Count = 1,
+			UserPin = true
+		},
+		-- ControlType == Knob
+		{
+			Name = "KnobHz",
+			ControlType = "Knob",
+			ControlUnit = "Hz",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobFloat",
+			ControlType = "Knob",
+			ControlUnit = "Float",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobInteger",
+			ControlType = "Knob",
+			ControlUnit = "Integer",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobPan",
+			ControlType = "Knob",
+			ControlUnit = "Pan",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobPercent",
+			ControlType = "Knob",
+			ControlUnit = "Percent",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobPosition",
+			ControlType = "Knob",
+			ControlUnit = "Position",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		},
+		{
+			Name = "KnobSeconds",
+			ControlType = "Knob",
+			ControlUnit = "Seconds",
+			PinStyle = "Output",
+			Count = 1,
+			UserPin = true
+		}
+	}
+	return ctls
+end
+
+--[[----------------------------------------------------------------------------------------------------------------------------
+	User Logic
+	All user logic for a Q-SYS plugin is defined inside the "if Controls then" block below.
+-------------------------------------------------------------------------------------------------------------------------------]]
+if Controls then
+	------------------------------------------------------------------------------------------
+	-- variables
+	-- Define variables here which need to be accessed within the 'if Controls then' block
+	------------------------------------------------------------------------------------------
+
+	--[[
+
+	-- A table used like a structure
+	MyDataTable = {
+        Host = "",
+        Port = 22,
+        Username = "",
+        Password = "",
+    }
+
+	-- Standalone variables
+	local MyBoolean = false
+	local MyString = "hello world!"
+	local MyInteger = 123
+	
+	]]
+	------------------------------------------------------------------------------------------
+	-- functions
+	-- define functions here which need to be accessed within the 'if Controls then' block
+	------------------------------------------------------------------------------------------
+
+	-- Define a handy utility function to print the contents of tables to the console
+	local function tprint(tbl, indent)
+		if not indent then
+			indent = 0
+		end
+		local toprint = string.rep(" ", indent) .. "{\r\n"
+		indent = indent + 2
+		for k, v in pairs(tbl) do
+			toprint = toprint .. string.rep(" ", indent)
+			if (type(k) == "number") then
+				toprint = toprint .. "[" .. k .. "] = "
+			elseif (type(k) == "string") then
+				toprint = toprint .. k .. "= "
+			end
+			if (type(v) == "number") then
+				toprint = toprint .. v .. ",\r\n"
+			elseif (type(v) == "string") then
+				toprint = toprint .. '"' .. v .. '",\r\n'
+			elseif (type(v) == "table") then
+				toprint = toprint .. tprint(v, indent + 2) .. ",\r\n"
+			else
+				toprint = toprint .. '"' .. tostring(v) .. '",\r\n'
+			end
+		end
+		toprint = toprint .. string.rep(" ", indent - 2) .. "}"
+		return toprint
+	end
+
+	-- Define an initialization function to get our plugin started up
+	local function initialize()
+		print("Initializing...")
+
+		-- todo: Do initialization stuff here...
+		tprint(PluginInfo)
+	end
+
+	------------------------------------------------------------------------------------------
+	-- Startup
+	------------------------------------------------------------------------------------------
+
+	-- We could do some logic here to determine if we can initialize
+	local canInitialize = true
+
+	if canInitialize then
+		initialize()
+		print("Initialization Complete.")
+	else
+		print("Could not initialize initialize")
+	end
+end
